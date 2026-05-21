@@ -1,17 +1,18 @@
-import { useState } from 'react'
-import './App.css'
-import type { BillModel, Errors } from './types'
+import { useState, useEffect } from 'react';
+import './App.css';
+import type { BillModel, Errors } from './types';
 import BillInput from './components/BillInput';
 import TipSelector from './components/TipSelector';
 import PeopleInput from './components/PeopleInput';
 import OutputPanel from './components/OutputPanel';
 import ResetButton from './components/ResetButton';
 
-
+// Rounding Policy: Round up to the nearest cent so the group never underpays the restaurant.
 function calculateBill(billAmount: number, tipPercent: number, people: number): BillModel {
-  const totalTip = billAmount * (tipPercent / 100);
-  const grandTotal = billAmount + totalTip;
-  const billPerPerson = Math.round((grandTotal / people) * 100) / 100;
+  const totalTip = Math.round(billAmount * (tipPercent / 100) * 100) / 100;
+  const grandTotal = Math.round((billAmount + totalTip) * 100) / 100;
+  // Apply our Math.ceil rounding policy for the per-person split.
+  const billPerPerson = Math.ceil((grandTotal / people) * 100) / 100;
 
   return {
     totalTip,
@@ -21,85 +22,176 @@ function calculateBill(billAmount: number, tipPercent: number, people: number): 
 }
 
 function App() {
-  const [billAmount, setBillAmount] = useState('')
-  const [tipPercent, setTipPercent] = useState(5)
-  const [people, setPeople] = useState(1)
-  const [errors, setErrors] = useState<Errors>({});
+  const [billAmount, setBillAmount] = useState('');
+  const [tipPercent, setTipPercent] = useState<number>(15);
+  const [customTip, setCustomTip] = useState<string>('');
+  const [people, setPeople] = useState('1');
+  // Dirtiness tracking to avoid showing errors on clean initial page loads.
+  const [touched, setTouched] = useState({
+    bill: false,
+    tip: false,
+    people: false,
+  });
 
-  const bill = parseFloat(billAmount);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  // Compute validation errors dynamically during render
+  const errors: Errors = {};
+
+  // Validate bill
+  if (touched.bill && billAmount !== '') {
+    const parsed = parseFloat(billAmount);
+    if (isNaN(parsed) || parsed <= 0) {
+      errors.bill = 'Must be greater than $0';
+    } else if (parsed > 10000000) {
+      errors.bill = 'Max amount is $10M';
+    }
+  } else if (touched.bill && billAmount === '') {
+    errors.bill = 'Bill is required';
+  }
+
+  // Validate tip
+  const activeTipStr = customTip !== '' ? customTip : String(tipPercent);
+  if (touched.tip && activeTipStr !== '') {
+    const parsed = parseFloat(activeTipStr);
+    if (isNaN(parsed) || parsed < 0) {
+      errors.tip = 'Cannot be negative';
+    } else if (parsed > 200) {
+      errors.tip = 'Max tip is 200%';
+    }
+  }
+
+  // Validate people
+  if (touched.people && people !== '') {
+    const parsed = parseFloat(people);
+    if (isNaN(parsed) || !Number.isInteger(parsed) || parsed < 1) {
+      errors.people = 'Must be a whole number ≥ 1';
+    } else if (parsed > 1000) {
+      errors.people = 'Max is 1,000 people';
+    }
+  } else if (touched.people && people === '') {
+    errors.people = 'Cannot be empty';
+  }
+
+  const billVal = parseFloat(billAmount);
+  const peopleVal = parseInt(people, 10);
+  const activeTipVal = customTip !== '' ? parseFloat(customTip) : tipPercent;
+
   const hasErrors = Object.keys(errors).length > 0;
-  const result = !hasErrors && bill > 0 ? calculateBill(bill, tipPercent, people) : null;
+  const canCalculate = !hasErrors && 
+    billAmount !== '' && !isNaN(billVal) && billVal > 0 &&
+    people !== '' && !isNaN(peopleVal) && peopleVal >= 1 &&
+    !isNaN(activeTipVal) && activeTipVal >= 0;
 
-  const isActive = billAmount !== '' || tipPercent !== 15 || people !== 1;
+  const result = canCalculate ? calculateBill(billVal, activeTipVal, peopleVal) : null;
+
+  // Active state for reset button: enable if any input was touched or differs from defaults
+  const isActive = billAmount !== '' || customTip !== '' || tipPercent !== 15 || people !== '1';
 
   const handleBillChange = (val: string) => {
-    setBillAmount(val);
-    const parsed = parseFloat(val);
-    const newErrors = { ...errors };
-
-    if (val === '' || isNaN(parsed) || parsed <= 0) {
-      newErrors.bill = 'Enter a valid amount greater than $0';
-    } else if (parsed > 999999) {
-      newErrors.bill = 'Amount too large (max $999,999)';
-    } else {
-      delete newErrors.bill;
+    setTouched(prev => ({ ...prev, bill: true }));
+    // Filter input to allow only decimals
+    if (val === '' || /^\d*\.?\d*$/.test(val)) {
+      setBillAmount(val);
     }
-
-    setErrors(newErrors);
   };
 
-  const handleTipChange = (val: number) => {
-    setTipPercent(val);
-    const newErrors = { ...errors };
-
-    if (val < 0) {
-      newErrors.tip = 'Tip cannot be negative';
-    } else if (val > 25) {
-      newErrors.tip = 'Tip cannot exceed 25%';
-    } else {
-      delete newErrors.tip;
-    }
-
-    setErrors(newErrors);
+  const handlePresetSelect = (preset: number) => {
+    setTouched(prev => ({ ...prev, tip: true }));
+    setTipPercent(preset);
+    setCustomTip('');
   };
 
-  const handlePeopleChange = (val: number) => {
-    setPeople(val);
-    const newErrors = { ...errors };
-
-    if (val < 1) {
-      newErrors.people = 'At least 1 person required';
-    } else {
-      delete newErrors.people;
+  const handleCustomTipChange = (val: string) => {
+    setTouched(prev => ({ ...prev, tip: true }));
+    if (val === '' || /^\d*\.?\d*$/.test(val)) {
+      setCustomTip(val);
     }
+  };
 
-    setErrors(newErrors);
+  const handlePeopleChange = (val: string) => {
+    setTouched(prev => ({ ...prev, people: true }));
+    // Allow digits only (integer input)
+    if (val === '' || /^\d*$/.test(val)) {
+      setPeople(val);
+    }
   };
 
   const handleReset = () => {
-    setBillAmount('')
-    setTipPercent(5)
-    setPeople(1)
-    setErrors({})
-  }
+    setBillAmount('');
+    setTipPercent(15);
+    setCustomTip('');
+    setPeople('1');
+    setTouched({
+      bill: false,
+      tip: false,
+      people: false,
+    });
+  };
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
 
   return (
     <div className="app-container">
-      <h1>Tip Calculator</h1>
-      <h2>Simple & Fast</h2>
-
-      <div className="calculator-layout">
-        <div className="input-section">
-          <BillInput value={billAmount} onChange={handleBillChange} error={errors.bill} />
-          <TipSelector value={tipPercent} onChange={handleTipChange} error={errors.tip} />
-          <PeopleInput value={people} onChange={handlePeopleChange} error={errors.people} />
-          <ResetButton onReset={handleReset} isActive={isActive} />
+      <header className="app-header">
+        <div className="logo-container">
+          <span className="logo-accent">Tip</span>Splitter
         </div>
+        <button
+          onClick={toggleTheme}
+          className="theme-toggle-btn"
+          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+        >
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
+      </header>
 
-        <OutputPanel result={result} />
-      </div>
+      <main className="calculator-layout">
+        <section className="input-section" aria-label="Calculator Inputs">
+          <BillInput
+            value={billAmount}
+            onChange={handleBillChange}
+            error={errors.bill}
+          />
+          
+          <TipSelector
+            value={tipPercent}
+            customValue={customTip}
+            onPresetSelect={handlePresetSelect}
+            onCustomChange={handleCustomTipChange}
+            error={errors.tip}
+          />
+          
+          <PeopleInput
+            value={people}
+            onChange={handlePeopleChange}
+            error={errors.people}
+          />
+        </section>
+
+        <section className="output-section" aria-label="Calculation Results">
+          <OutputPanel result={result} />
+          <ResetButton onReset={handleReset} isActive={isActive} />
+        </section>
+      </main>
+      
+      <footer className="app-footer">
+        <p>Built with precision • Round-up policy active</p>
+      </footer>
     </div>
   );
 }
 
-export default App
+export default App;

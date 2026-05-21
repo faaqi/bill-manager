@@ -1,29 +1,45 @@
 import type { BillModel } from '../types';
 
 interface OutputPanelProps {
-    result: BillModel | null;
+  result: BillModel | null;
 }
 
 export default function OutputPanel({ result }: OutputPanelProps) {
-    const fmt = (val: number | undefined) => (val ?? 0).toFixed(2);
+  const fmt = (val: number | undefined) => (val ?? 0).toFixed(2);
 
-    const rows = [
-        { label: 'Tip amount', sub: null, value: result?.totalTip },
-        { label: 'Grand total', sub: null, value: result?.grandTotal },
-        { label: 'Per person', sub: '/ total', value: result?.billPerPerson },
-    ];
-
-    return (
-        <div className="output-panel">
-            {rows.map((row) => (
-                <div key={row.label} className="output-row">
-                    <div>
-                        <p className="output-label">{row.label}</p>
-                        {row.sub && <p className="output-sublabel">{row.sub}</p>}
-                    </div>
-                    <span className="output-value">${fmt(row.value)}</span>
-                </div>
-            ))}
+  return (
+    <div className="output-container">
+      <div className="output-row">
+        <div className="output-label-group">
+          <span className="output-label-title">Total Tip</span>
+          <span className="output-label-subtitle">total tip amount</span>
         </div>
-    );
+        <span className="output-value" aria-live="polite">
+          ${fmt(result?.totalTip)}
+        </span>
+      </div>
+
+      <div className="output-row">
+        <div className="output-label-group">
+          <span className="output-label-title">Grand Total</span>
+          <span className="output-label-subtitle">bill + tip total</span>
+        </div>
+        <span className="output-value" aria-live="polite">
+          ${fmt(result?.grandTotal)}
+        </span>
+      </div>
+
+      <div className="output-divider" aria-hidden="true" />
+
+      <div className="output-row highlight">
+        <div className="output-label-group">
+          <span className="output-label-title">Per Person</span>
+          <span className="output-label-subtitle">individual share</span>
+        </div>
+        <span className="output-value large" aria-live="polite">
+          ${fmt(result?.billPerPerson)}
+        </span>
+      </div>
+    </div>
+  );
 }

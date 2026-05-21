@@ -1,49 +1,70 @@
-import React from 'react';
 
 interface TipSelectorProps {
-    value: number;
-    onChange: (val: number) => void;
-    error?: string;
+  value: number;
+  customValue: string;
+  onPresetSelect: (preset: number) => void;
+  onCustomChange: (val: string) => void;
+  error?: string;
 }
 
-export default function TipSelector({ value, onChange, error }: TipSelectorProps) {
-    const presets = [10, 15, 20];
+export default function TipSelector({
+  value,
+  customValue,
+  onPresetSelect,
+  onCustomChange,
+  error,
+}: TipSelectorProps) {
+  const presets = [5, 10, 15, 20, 25];
+  const isCustomActive = customValue !== '';
+  const activePreset = isCustomActive ? null : value;
+  const inputId = 'custom-tip-input';
+  const errorId = 'tip-error';
 
-    const isPresetActive = (preset: number) => value === preset;
+  return (
+    <div className="field-group">
+      <div className="label-container">
+        <label className="field-label" htmlFor={inputId}>
+          Select Tip %
+        </label>
+        {error && (
+          <span id={errorId} className="error-msg" role="alert">
+            {error}
+          </span>
+        )}
+      </div>
 
-    const isCustomActive = value !== 0 && !presets.includes(value);
+      <div className="tip-grid" role="group" aria-label="Tip Percentage Presets">
+        {presets.map((preset) => {
+          const isActive = activePreset === preset;
+          return (
+            <button
+              key={preset}
+              type="button"
+              onClick={() => onPresetSelect(preset)}
+              className={`preset-btn ${isActive ? 'active' : ''}`}
+              aria-pressed={isActive}
+            >
+              {preset}%
+            </button>
+          );
+        })}
 
-    const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const numValue = parseFloat(e.target.value);
-        onChange(isNaN(numValue) ? 0 : numValue);
-    };
-
-    return (
-        <div className="field-group">
-            <label className="field-label">Select tip %</label>
-            <div className='tip-presets'>
-                {presets.map((preset) => (
-                    <button
-                        key={preset}
-                        type="button"
-                        onClick={() => onChange(preset)}
-                        className={`preset-btn ${isPresetActive(preset) ? 'active' : ''}`}
-                    >
-                        {preset}%
-                    </button>
-                ))}
-            </div>
-            <input
-                type="number"
-                placeholder="Custom %"
-                min="0"
-                max="25"
-                inputMode="decimal"
-                value={isCustomActive ? value : ''}
-                onChange={handleCustomChange}
-                className={`custom-tip-input ${isCustomActive ? 'active' : ''} ${error ? 'error' : ''}`}
-            />
-            {error && <span className="error-msg">{error}</span>}
+        <div className={`custom-tip-container ${isCustomActive ? 'active' : ''} ${error ? 'has-error' : ''}`}>
+          <input
+            id={inputId}
+            type="text"
+            inputMode="decimal"
+            placeholder="Custom"
+            value={customValue}
+            onChange={(e) => onCustomChange(e.target.value)}
+            className="custom-tip-input-field"
+            aria-label="Custom tip percentage"
+            aria-invalid={!!error}
+            aria-describedby={error ? errorId : undefined}
+          />
+          <span className="percent-suffix" aria-hidden="true">%</span>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
