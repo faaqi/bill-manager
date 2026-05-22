@@ -222,23 +222,26 @@
   display: flex;
   align-items: center;
   background: var(--input-bg);
-  border: 1.5px solid var(--input-border);
+  border: 2px dashed var(--accent);
   border-radius: var(--border-radius-sm);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 .custom-tip-container:hover {
-  border-color: var(--accent);
+  border-color: var(--accent-hover);
+  background: var(--accent-light);
 }
 
 .custom-tip-container.active {
+  border-style: solid;
   border-color: var(--accent);
-  background: var(--card-bg);
-  box-shadow: 0 0 0 4px rgba(var(--accent-glow-rgb), 0.15);
+  background: var(--accent-light);
+  box-shadow: 0 0 0 4px rgba(var(--accent-glow-rgb), 0.18);
 }
 
 .custom-tip-container.has-error {
   border-color: var(--error-color);
+  border-style: solid;
   background: var(--error-bg);
 }
 
@@ -256,9 +259,11 @@
 }
 
 .custom-tip-input-field::placeholder {
-  color: var(--text-muted);
+  color: var(--accent);
+  font-weight: 600;
   text-align: center;
   padding-right: 0;
+  opacity: 0.7;
 }
 
 .percent-suffix {
@@ -339,7 +344,7 @@
 
 .output-row.highlight .output-value {
   color: var(--panel-glow);
-  text-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+  text-shadow: 0 0 15px rgba(124, 58, 237, 0.25);
 }
 
 /* Reset Button */
@@ -363,13 +368,13 @@
   background: var(--reset-btn-active-bg);
   color: var(--reset-btn-active-text);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.2);
 }
 
 .reset-btn:enabled:hover {
   background: var(--reset-btn-hover-bg);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
 }
 
 .reset-btn:enabled:active {
