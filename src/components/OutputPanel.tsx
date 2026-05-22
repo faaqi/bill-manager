@@ -5,7 +5,13 @@ interface OutputPanelProps {
 }
 
 export default function OutputPanel({ result }: OutputPanelProps) {
-  const fmt = (val: number | undefined) => (val ?? 0).toFixed(2);
+  const fmt = (val: number | undefined) => {
+    const formatted = (val ?? 0).toFixed(2);
+    if (formatted.endsWith('.00')) {
+      return formatted.slice(0, -3);
+    }
+    return formatted;
+  };
 
   return (
     <div className="output-container">
