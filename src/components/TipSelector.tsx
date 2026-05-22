@@ -14,7 +14,7 @@ export default function TipSelector({
   onCustomChange,
   error,
 }: TipSelectorProps) {
-  const presets = [5, 10, 15, 20, 25];
+  const presets = [10, 15, 20];
   const isCustomActive = customValue !== '';
   const activePreset = isCustomActive ? null : value;
   const inputId = 'custom-tip-input';

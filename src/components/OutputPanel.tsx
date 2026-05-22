@@ -42,7 +42,7 @@ export default function OutputPanel({ result }: OutputPanelProps) {
           <span className="output-label-title">Per Person</span>
           <span className="output-label-subtitle">individual share</span>
         </div>
-        <span className="output-value large" aria-live="polite">
+        <span className="output-value" aria-live="polite">
           ${fmt(result?.billPerPerson)}
         </span>
       </div>
