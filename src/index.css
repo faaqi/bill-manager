@@ -45,13 +45,13 @@
 
 [data-theme='dark'] {
   /* Dark Mode */
-  --bg-gradient: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 100%);
-  --card-bg: rgba(15, 23, 42, 0.65);
-  --card-border: 1px solid rgba(255, 255, 255, 0.05);
+  --bg-gradient: radial-gradient(circle at 50% 0%, #1e3a8a 0%, #0a1128 100%);
+  --card-bg: rgba(15, 23, 42, 0.75);
+  --card-border: 1px solid rgba(255, 255, 255, 0.08);
   --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
   
   --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  --text-secondary: #cbd5e1;
   --text-muted: #64748b;
   
   --accent: #38bdf8;
@@ -60,7 +60,7 @@
   --accent-glow: #38bdf8;
   --accent-glow-rgb: 56, 189, 248;
   
-  --input-bg: #0b0f19;
+  --input-bg: #0f172a;
   --input-border: #1e293b;
   --input-focus-border: #38bdf8;
   
@@ -68,15 +68,15 @@
   --error-bg: rgba(239, 68, 68, 0.06);
   --error-border: rgba(239, 68, 68, 0.15);
   
-  --panel-bg: linear-gradient(145deg, #030712 0%, #0f172a 100%);
+  --panel-bg: linear-gradient(145deg, #0f172a 0%, #1e3a8a 100%);
   --panel-text-primary: #f8fafc;
-  --panel-text-secondary: #64748b;
+  --panel-text-secondary: #94a3b8;
   --panel-glow: #38bdf8;
   
   --reset-btn-bg: #1e293b;
-  --reset-btn-text: #475569;
+  --reset-btn-text: #64748b;
   --reset-btn-active-bg: #38bdf8;
-  --reset-btn-active-text: #030712;
+  --reset-btn-active-text: #0f172a;
   --reset-btn-hover-bg: #7dd3fc;
 }
 

@@ -146,7 +146,7 @@ function App() {
     <div className="app-container">
       <header className="app-header">
         <div className="logo-container">
-          <span className="logo-accent">Tip</span>Splitter
+          <span className="logo-accent">Bill</span> Splitter
         </div>
         <button
           onClick={toggleTheme}
@@ -186,10 +186,6 @@ function App() {
           <ResetButton onReset={handleReset} isActive={isActive} />
         </section>
       </main>
-      
-      <footer className="app-footer">
-        <p>Built with precision • Round-up policy active</p>
-      </footer>
     </div>
   );
 }

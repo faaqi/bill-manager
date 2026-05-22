@@ -1,73 +1,57 @@
-# React + TypeScript + Vite
+# Bill Splitter
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive tip calculator and bill splitter — built with React 19, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Live updates** — results recalculate on every keystroke, no submit button needed
+- **Tip presets** — one-click 5%, 10%, 15%, 20%, 25% buttons plus a freeform custom % field
+- **Bill splitting** — divide any bill across up to 1,000 people
+- **Round-up policy** — per-person shares are always rounded up to the nearest cent so the restaurant is never underpaid
+- **Inline validation** — errors appear next to the offending field, never via `alert()`
+- **Light / Dark mode** — auto-detects system preference, toggleable with one click, persisted to `localStorage`
+- **Fully accessible** — linked labels, `aria-invalid`, `aria-describedby`, `aria-live`, `aria-pressed`, keyboard-navigable
 
-## React Compiler
+## Run locally
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# 1. Install dependencies (Node 18+ required)
+npm install
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 2. Start the dev server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open **http://localhost:5173** in your browser.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# Build for production
+npm run build
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Preview the production build
+npm run preview
 ```
+
+## Deployed URL
+
+_Add your Vercel / Netlify / GitHub Pages URL here once deployed._
+
+## Project structure
+
+```
+src/
+  App.tsx              # Root component — state, validation, layout
+  App.css              # All component styles
+  index.css            # Design tokens (CSS variables), global resets
+  types.ts             # Shared TypeScript interfaces
+  components/
+    BillInput.tsx      # Bill amount field
+    TipSelector.tsx    # Preset buttons + custom tip input
+    PeopleInput.tsx    # Number of people field
+    OutputPanel.tsx    # Live results receipt
+    ResetButton.tsx    # Reset / clear button
+```
+
+## Assessment files
+
+- [`ANSWERS.md`](./ANSWERS.md) — answers to the 5 assessment questions
