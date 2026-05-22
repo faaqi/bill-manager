@@ -17,7 +17,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser. The app run
 **To build for production:**
 ```bash
 npm run build
-npm run preview   # previews the built output locally
+npm run preview  
 ```
 
 ---
@@ -31,13 +31,9 @@ npm run preview   # previews the built output locally
 - **Vite** for sub-second HMR and a zero-config build pipeline, letting me focus entirely on the product rather than build setup.
 - **Vanilla CSS** (no Tailwind, no CSS-in-JS) so every selector is intentional and the stylesheet is reviewable without build tooling.
 
-**Design Decision 1 — Two-column layout with the output panel "locked" on the right.**
+**Design Decision — Two-column layout with the output panel "locked" on the right.**
 
 The output panel (`OutputPanel.tsx`) lives to the right of the inputs on desktop and below them on mobile, and it occupies the full column height with `flex-grow: 1`. This means the receipt-style results card stretches to match the input form, creating visual balance. The key reason: when a user is entering a bill amount at the top and glancing right to see results, their eye travels horizontally — a much shorter path than scrolling down. This is the same convention used by Figma's inspector panel and most calculator UIs.
-
-**Design Decision 2 — Tip preset buttons use `aria-pressed` and an inline custom-tip field inside the same grid.**
-
-Originally the custom tip was a separate input below the preset grid. I moved it into the grid's sixth cell (the presets are a 3×2 grid). This serves two purposes: (a) it visually communicates that "Custom" is one option among the presets, not a fallback afterthought, and (b) it keeps the interaction spatially contained — the user's finger or cursor never has to leave the tip section. The active preset gets a filled background (`background: var(--accent)`) with an elevated shadow, making the currently selected rate unmistakably clear even at a glance.
 
 ---
 
@@ -62,11 +58,9 @@ I did not implement a skip-navigation link ("Skip to main content"). For a singl
 
 **Tool used: Antigravity (Google DeepMind's agentic coding assistant)**
 
-| Where | What I asked | What it gave me | What I changed and why |
-|---|---|---|---|
-| Initial validation logic | Asked AI to compute errors with a `useEffect` that called `setErrors` | Produced a `useEffect` → `setErrors` pattern | The ESLint rule `react-hooks/set-state-in-effect` flagged this as a cascade-render risk. I removed the `useEffect` entirely and computed `errors` as a plain `const` during render — zero extra renders, and the lint error disappears. This is the recommended modern React approach ("you might not need an effect"). |
-| CSS grid for tip presets | Asked AI to lay out presets in a 3-column grid with a separate custom input below | Gave me `grid-template-columns: repeat(3, 1fr)` with a `grid-column: 1 / -1` full-width custom row | I changed this to integrate the custom input directly as the 6th cell of the same grid, giving it the same visual weight as a preset. This makes the custom option feel like a first-class choice rather than an overflow field. |
-| Rounding policy | Asked AI to implement per-person splitting | Used `Math.round` | Changed to `Math.ceil((grandTotal / people) * 100) / 100` — round up to the nearest cent so the restaurant is never underpaid (see Q5 below). |
+Honestly, I am a Senior Software Engineer with 5+ years of experience as a Mobile App Developer, primarily with Flutter and Dart. However, I worked on some MERN Stack projects as well and deployed it in produciton for my clients as well. 
+
+So, I basically gave AI my plan regarding design, theme, coloring, rounding policy and orchestration of components and AI did the rest of the job of implementing it in code and I just provided a few tweaks here and there and tested it for responsiveness and accessibility and performance etc.
 
 ---
 
@@ -82,4 +76,4 @@ I did not implement a skip-navigation link ("Skip to main content"). For a singl
 
 ## 6. Honest Gap
 
-The input validation fires only after the user has *touched* a field (the `touched` state flags). This avoids spraying errors at someone who's mid-entry, which is correct. However, the bill field does not validate on *blur* — it only validates as you type. If a user clicks into the bill input and immediately clicks away without typing anything, no error appears until they start and stop again. The fix is to also set `touched.bill = true` in an `onBlur` handler on the bill input. With another day I would wire `onBlur` to mark every field as touched, so leaving an empty required field shows an error immediately rather than waiting for the first keystroke.
+The App is a bit polished but if I get another day, I'll try to localize it for different languages, currency because after building my WalletGPT App and deploying it in production, I got many messages from users in different languages and currency and it was a bit exciting to handle all different types of languages like RTL as well and different currencies as well. Because currencies have different rules of placing currency symbol and handling decimals and 

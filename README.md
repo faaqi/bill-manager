@@ -34,7 +34,7 @@ npm run preview
 
 ## Deployed URL
 
-_Add your Vercel / Netlify / GitHub Pages URL here once deployed._
+Bill Splitter: **https://bill-splitter-task.netlify.app/**
 
 ## Project structure
 
