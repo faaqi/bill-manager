@@ -15,7 +15,7 @@ export default function OutputPanel({ result }: OutputPanelProps) {
 
   return (
     <div className="output-container">
-      <div className="output-row">
+      <div className="output-row highlight">
         <div className="output-label-group">
           <span className="output-label-title">Total Tip</span>
           <span className="output-label-subtitle">total tip amount</span>
@@ -25,7 +25,7 @@ export default function OutputPanel({ result }: OutputPanelProps) {
         </span>
       </div>
 
-      <div className="output-row">
+      <div className="output-row highlight">
         <div className="output-label-group">
           <span className="output-label-title">Grand Total</span>
           <span className="output-label-subtitle">bill + tip total</span>

@@ -7,11 +7,9 @@ import PeopleInput from './components/PeopleInput';
 import OutputPanel from './components/OutputPanel';
 import ResetButton from './components/ResetButton';
 
-// Rounding Policy: Round up to the nearest cent so the group never underpays the restaurant.
 function calculateBill(billAmount: number, tipPercent: number, people: number): BillModel {
   const totalTip = Math.round(billAmount * (tipPercent / 100) * 100) / 100;
   const grandTotal = Math.round((billAmount + totalTip) * 100) / 100;
-  // Apply our Math.ceil rounding policy for the per-person split.
   const billPerPerson = Math.ceil((grandTotal / people) * 100) / 100;
 
   return {
@@ -26,7 +24,7 @@ function App() {
   const [tipPercent, setTipPercent] = useState<number>(15);
   const [customTip, setCustomTip] = useState<string>('');
   const [people, setPeople] = useState('1');
-  // Dirtiness tracking to avoid showing errors on clean initial page loads.
+
   const [touched, setTouched] = useState({
     bill: false,
     tip: false,
@@ -44,10 +42,8 @@ function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // Compute validation errors dynamically during render
   const errors: Errors = {};
 
-  // Validate bill
   if (touched.bill && billAmount !== '') {
     const parsed = parseFloat(billAmount);
     if (isNaN(parsed) || parsed <= 0) {
@@ -59,18 +55,16 @@ function App() {
     errors.bill = 'Bill is required';
   }
 
-  // Validate tip
   const activeTipStr = customTip !== '' ? customTip : String(tipPercent);
   if (touched.tip && activeTipStr !== '') {
     const parsed = parseFloat(activeTipStr);
     if (isNaN(parsed) || parsed < 0) {
       errors.tip = 'Cannot be negative';
-    } else if (parsed > 200) {
-      errors.tip = 'Max tip is 200%';
+    } else if (parsed > 40) {
+      errors.tip = 'Max tip is 40%';
     }
   }
 
-  // Validate people
   if (touched.people && people !== '') {
     const parsed = parseFloat(people);
     if (isNaN(parsed) || !Number.isInteger(parsed) || parsed < 1) {
@@ -87,19 +81,17 @@ function App() {
   const activeTipVal = customTip !== '' ? parseFloat(customTip) : tipPercent;
 
   const hasErrors = Object.keys(errors).length > 0;
-  const canCalculate = !hasErrors && 
+  const canCalculate = !hasErrors &&
     billAmount !== '' && !isNaN(billVal) && billVal > 0 &&
     people !== '' && !isNaN(peopleVal) && peopleVal >= 1 &&
     !isNaN(activeTipVal) && activeTipVal >= 0;
 
   const result = canCalculate ? calculateBill(billVal, activeTipVal, peopleVal) : null;
 
-  // Active state for reset button: enable if any input was touched or differs from defaults
   const isActive = billAmount !== '' || customTip !== '' || tipPercent !== 15 || people !== '1';
 
   const handleBillChange = (val: string) => {
     setTouched(prev => ({ ...prev, bill: true }));
-    // Filter input to allow only decimals
     if (val === '' || /^\d*\.?\d*$/.test(val)) {
       setBillAmount(val);
     }
@@ -120,7 +112,6 @@ function App() {
 
   const handlePeopleChange = (val: string) => {
     setTouched(prev => ({ ...prev, people: true }));
-    // Allow digits only (integer input)
     if (val === '' || /^\d*$/.test(val)) {
       setPeople(val);
     }
@@ -165,7 +156,7 @@ function App() {
             onChange={handleBillChange}
             error={errors.bill}
           />
-          
+
           <TipSelector
             value={tipPercent}
             customValue={customTip}
@@ -173,7 +164,7 @@ function App() {
             onCustomChange={handleCustomTipChange}
             error={errors.tip}
           />
-          
+
           <PeopleInput
             value={people}
             onChange={handlePeopleChange}
